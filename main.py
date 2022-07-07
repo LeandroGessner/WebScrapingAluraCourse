@@ -73,3 +73,22 @@ print(soup.prettify())
 
 # Buscando um elemento de forma sequencial, percorrendo a DOM
 print(soup.html.head.title)
+
+# Busca o texto dentro da tag
+print(soup.title.get_text())
+print(soup.h5.getText())
+
+print(soup.img)
+
+# Acessando os atributos de uma tag - esse método retorna um dicionário
+print(soup.img.attrs)
+
+# Buscando as chaves do dicionário do método acima
+print(soup.img.attrs.keys())
+
+# Buscando os valores
+print(soup.img.attrs.values())
+
+# Acessando valores em forma de dicionário
+print(soup.img['class'])
+print(soup.img.get('src'))
