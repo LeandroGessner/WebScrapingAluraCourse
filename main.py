@@ -1,4 +1,5 @@
 # %%
+from cgitb import text
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
@@ -69,26 +70,56 @@ from bs4 import BeautifulSoup
 soup = BeautifulSoup(html, 'html.parser')
 
 # Mostrando na tela de uma forma bonita, identada
-print(soup.prettify())
+soup.prettify()
 
 # Buscando um elemento de forma sequencial, percorrendo a DOM
-print(soup.html.head.title)
+soup.html.head.title
 
 # Busca o texto dentro da tag
-print(soup.title.get_text())
-print(soup.h5.getText())
+soup.title.get_text()
+soup.h5.getText()
 
-print(soup.img)
+soup.img
 
 # Acessando os atributos de uma tag - esse método retorna um dicionário
-print(soup.img.attrs)
+soup.img.attrs
 
 # Buscando as chaves do dicionário do método acima
-print(soup.img.attrs.keys())
+soup.img.attrs.keys()
 
 # Buscando os valores
-print(soup.img.attrs.values())
+soup.img.attrs.values()
 
 # Acessando valores em forma de dicionário
-print(soup.img['class'])
-print(soup.img.get('src'))
+soup.img['class']
+soup.img.get('src')
+
+
+# %%
+# Pesquisando com o BeautifulSoup
+
+soup.find('img')
+
+soup.findAll('img')
+
+soup.findAll('img', limit=1)
+
+# A forma de pesquisar abaixo é igual ao findAll, sem limit
+soup('img')
+
+soup.findAll(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+
+soup.findAll('p', {'class':'txt-value'})
+
+soup.findAll('p', text='Belo Horizonte - MG')
+
+soup.findAll('img', alt='Foto')
+
+for item in soup.findAll('img', alt='Foto'):
+    print(item.get('src'))
+
+# Tomar cuidado com a palavra 'class'
+soup.find_all('p', class_='txt-value')
+
+# Encontrando todos os textos dentro das tags
+soup.find_all(text = True)
