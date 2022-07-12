@@ -182,9 +182,59 @@ from bs4 import BeautifulSoup
 response = urlopen('https://alura-site-scraping.herokuapp.com/index.php')
 html = response.read().decode('utf-8')
 soup = BeautifulSoup(html, 'html.parser')
-print(soup)
 
 crads = []
 card = {}
 
-# Obtendo
+# OBTENDO OS DADOS DO PRIMEIRO CARD
+
+anuncio = soup.find('div', {'class': 'well card'})
+
+# Obtendo o valor do veiculo
+anuncio.find('div', {'class':'value-card'})
+anuncio.find('p', {'class':'txt-value'}).get_text()
+
+card['value'] = anuncio.find('p', {'class':'txt-value'}).get_text()
+
+# %%
+# Obtendo informações sobre o veículo anunciado
+anuncio.find('div', {'class':'body-card'}).find_all('p')
+
+infos = anuncio.find('div', {'class':'body-card'}).find_all('p')
+
+for info in infos:
+    card[info.get('class')[0].split('-')[-1]] =  info.get_text()
+
+# %%
+# Obtendo os acessorios
+anuncio.find('div', {'class':'body-card'}).ul.find_all('li')
+
+items = anuncio.find('div', {'class':'body-card'}).ul.find_all('li')
+
+items.pop()
+
+acessorios = []
+
+for item in items:
+    acessorios.append(item.get_text().replace('► ', ''))
+
+card['items'] = acessorios
+
+# %%
+# Criando um dataframe com os dados extraidos
+import pandas as pd
+
+# O .T no final da linha faz a transposição do dataframe
+dataset = pd.DataFrame().from_dict(card, orient='index').T
+
+dataset.to_csv('./data/dataset.csv', sep=';', index=False, encoding='utf-8-sig')
+
+# %%
+# Obtendo a foto o anuncio
+from urllib.request import urlretrieve
+
+image = anuncio.find('div', {'class':'image-card'}).img
+
+image.get('src')
+
+urlretrieve(image.get('src'), './img/' + image.get('src').split('/')[-1])
