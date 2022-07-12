@@ -44,13 +44,13 @@ except URLError as e:
 # %%
 from urllib.request import urlopen
 
-
+# %%
 def process_html_response(input: bytes) -> str:
     input = input.decode('utf-8')
 
     return ' '.join(input.split()).replace('> <', '><')
 
-
+# %%
 # Consultando o site da feito para o curso - Alura Motors
 url = 'https://alura-site-scraping.herokuapp.com/index.php'
 
@@ -123,3 +123,68 @@ soup.find_all('p', class_='txt-value')
 
 # Encontrando todos os textos dentro das tags
 soup.find_all(text = True)
+
+
+# %%
+# Outros métodos de pesquisa
+
+html_teste = """
+    <html>
+        <body>
+            <div id="container-a">
+                <h1>Título A</h1>
+                <h2 class="ref-a">Sub título A</h2>
+                <p>Texto de conteúdo A</p>
+            </div>
+            <div id="container-b">
+                <h1>Título B</h1>
+                <h2 class="ref-b">Sub título B</h2>
+                <p>Texto de conteúdo B</p>
+            </div>
+        </body>
+    </html>
+"""
+
+# Tratando o conteúdo html
+html_teste = process_html_response(html_teste)
+
+# Criando um objeto BeautifulSoup
+soup = BeautifulSoup(html_teste, 'html.parser')
+
+soup.find('h2')
+
+# Parents
+soup.find('h2').find_parent('div')
+soup.find('h2').find_parents()
+soup.findAll('h2')
+
+for item in soup.findAll('h2'):
+    print(item.find_parent('div'))
+
+# Siblings
+soup.find('h2').findNextSibling()
+soup.find('h2').findPreviousSibling()
+soup.find('p').findPreviousSiblings()
+
+# Next and Previous
+soup.find('h2').find_next()
+soup.find('h2').find_previous()
+soup.find('h2').find_all_next()
+
+
+# %%
+# WebScraping do site Alura Motors
+
+from urllib.request import urlopen, Request
+from urllib.error import URLError, HTTPError
+from bs4 import BeautifulSoup
+
+response = urlopen('https://alura-site-scraping.herokuapp.com/index.php')
+html = response.read().decode('utf-8')
+soup = BeautifulSoup(html, 'html.parser')
+print(soup)
+
+crads = []
+card = {}
+
+# Obtendo
