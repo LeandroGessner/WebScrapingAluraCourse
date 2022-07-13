@@ -301,3 +301,66 @@ for anuncio in anuncios:
 dataset = pd.DataFrame(cards)
 
 dataset.to_csv('./data/dataset.csv', sep=';', index=False, encoding='utf-8-sig')
+
+
+# %%
+# Extraindo os dados de todo o site, página por página
+
+# Importacao das bibliotecas
+from urllib.request import urlopen, urlretrieve
+from bs4 import BeautifulSoup
+import pandas as pd
+
+# Declaração de variáveis
+cards = []
+
+# Obtendo o HTML
+response = urlopen('https://alura-site-scraping.herokuapp.com/index.php')
+html = response.read().decode('utf-8')
+soup = BeautifulSoup(html, 'html.parser')
+pages = int(soup.find('span', class_='info-pages').get_text().split()[-1])
+
+# Iterando por todas as páginas do site
+for i in range(pages):
+    # Obtendo o HTML
+    response = urlopen('https://alura-site-scraping.herokuapp.com/index.php?page=' + str(i + 1))
+    html = response.read().decode('utf-8')
+    soup = BeautifulSoup(html, 'html.parser')
+
+    # Obtendo as TAGs de interesse
+    anuncios = soup.find('div', {'id':'container-cards'}).find_all('div', class_='well card')
+
+    # Coletando as informações dos CARDS
+    for anuncio in anuncios:
+        card = {}
+
+        # Valor do veiculo
+        card['value'] = anuncio.find('p', {'class':'txt-value'}).get_text()
+
+        # Informações
+        infos = anuncio.find('div', {'class':'body-card'}).find_all('p')
+
+        for info in infos:
+            card[info.get('class')[0].split('-')[-1]] = info.get_text()
+        
+        # Acessorios
+        items = anuncio.find('div', {'class':'body-card'}).ul.find_all('li')
+        items.pop()
+        acessorios = []
+
+        for item in items:
+            acessorios.append(item.get_text().replace('► ', ''))
+        
+        card['items'] = acessorios
+
+        # Adicionando resultado a lista cards
+        cards.append(card)
+
+        # Imagens
+        image = anuncio.find('div', {'class':'image-card'}).img
+        urlretrieve(image.get('src'), './img/' + image.get('src').split('/')[-1])
+
+# Criando um DataFrame com os resultados
+dataset = pd.DataFrame(cards)
+
+dataset.to_csv('./data/dataset.csv', sep=';', index=False, encoding='utf-8-sig')
